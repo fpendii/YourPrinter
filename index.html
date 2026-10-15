@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Printer - Kasir Print</title>
+    <link rel="icon" type="image/png" href="icon.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="brand"><img src="logo.png" alt="Logo Your Printer" class="brand-logo" /><span>Your Printer</span></div>
+      <nav aria-label="Navigasi utama">
+        <button class="nav-item active" data-view="order"><span>⊞</span> Pesanan Baru</button>
+        <button class="nav-item" data-view="report"><span>▤</span> Rekap</button>
+        <button class="nav-item" data-view="settings"><span>⚙</span> Tarif</button>
+      </nav>
+      <div class="sidebar-note">Tahap 1<br /><span>PDF & perhitungan dasar</span></div>
+    </aside>
+
+    <main>
+      <section id="order-view" class="view active">
+        <header><p class="eyebrow">PESANAN BARU</p><h1>Hitung biaya cetak</h1><p class="subheading">Pilih PDF, lalu aplikasi menghitung jumlah halamannya.</p></header>
+        <div class="order-grid">
+          <div class="card upload-card">
+            <h2>File pelanggan</h2>
+            <button id="choose-file" class="file-drop" type="button">
+              <span class="upload-icon">↑</span>
+              <strong>Pilih file PDF</strong>
+              <small>Halaman dan warna dibaca otomatis</small>
+            </button>
+            <div id="file-loading" class="file-loading hidden" aria-live="polite">
+              <div class="spinner"></div>
+              <strong id="loading-title">Menganalisis dokumen...</strong>
+              <small id="loading-status">Sedang membaca halaman...</small>
+              <div class="progress-track">
+                <div id="progress-bar" class="progress-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+            <div id="file-result" class="file-result hidden" aria-live="polite">
+              <div><strong id="file-name"></strong><span id="page-result"></span></div>
+              <button id="remove-file" class="text-button" type="button">Ganti file</button>
+            </div>
+            <p id="file-error" class="error hidden" role="alert"></p>
+          </div>
+
+          <form id="order-form" class="card form-card">
+            <h2>Rincian pesanan</h2>
+            <label>Nama pelanggan<input id="customer" type="text" placeholder="Contoh: Budi" autocomplete="off" /></label>
+            <div class="two-columns">
+              <label>Ukuran kertas<select id="paper-size"><option>A4</option><option>F4</option><option>A3</option></select></label>
+              <label>Jumlah rangkap<input id="copies" type="number" min="1" value="1" /></label>
+            </div>
+            <div class="print-mode-section">
+              <label>Pilihan cetak</label>
+              <div class="print-mode-group" role="radiogroup" aria-label="Pilihan cetak">
+                <label class="mode-card" id="mode-card-color">
+                  <input type="radio" name="print-mode" value="color" checked />
+                  <div class="mode-content">
+                    <strong>Berwarna</strong>
+                    <small>Hitung halaman berwarna &amp; hitam-putih</small>
+                  </div>
+                </label>
+                <label class="mode-card" id="mode-card-bw">
+                  <input type="radio" name="print-mode" value="bw" />
+                  <div class="mode-content">
+                    <strong>Tidak Berwarna</strong>
+                    <small>Semua halaman dihitung tarif hitam-putih</small>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <div id="page-breakdown" class="page-split hidden">
+              <div id="bw-box"><label>Halaman hitam-putih<input id="bw-pages" type="number" min="0" value="0" /></label><small id="bw-price-label">Rp0 / halaman</small></div>
+              <div id="color-box"><label>Halaman warna<input id="color-pages" type="number" min="0" value="0" /></label><small id="color-price-label">Rp0 / halaman</small></div>
+            </div>
+            <p id="page-validation" class="hint hidden">Pilih PDF untuk menghitung dan memisahkan halaman warna secara otomatis.</p>
+            <div class="total-box"><span>Total biaya</span><strong id="total-price">Rp0</strong></div>
+            <button class="primary-button" type="submit">Simpan pesanan</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="report-view" class="view">
+        <header><p class="eyebrow">REKAP</p><h1>Ringkasan transaksi</h1><p class="subheading">Data tersimpan di komputer ini.</p></header>
+        <div class="metrics">
+          <article class="metric"><span>Pendapatan hari ini</span><strong id="today-income">Rp0</strong></article>
+          <article class="metric"><span>Pesanan hari ini</span><strong id="today-orders">0</strong></article>
+          <article class="metric"><span>Lembar hitam-putih</span><strong id="total-bw">0</strong></article>
+          <article class="metric"><span>Lembar warna</span><strong id="total-color">0</strong></article>
+        </div>
+        <div class="card table-card"><div class="table-heading"><h2>Transaksi terakhir</h2><button id="refresh-report" class="text-button" type="button">Muat ulang</button></div><div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Pelanggan</th><th>File</th><th>Halaman</th><th>Total</th></tr></thead><tbody id="transaction-list"></tbody></table></div><p id="empty-transactions" class="empty">Belum ada transaksi tersimpan.</p></div>
+      </section>
+
+      <section id="settings-view" class="view">
+        <header><p class="eyebrow">TARIF</p><h1>Atur harga cetak</h1><p class="subheading">Tarif langsung dipakai pada pesanan berikutnya.</p></header>
+        <form id="settings-form" class="card settings-card"><label>Harga hitam-putih per halaman<input id="bw-price" type="number" min="0" step="50" /></label><label>Harga warna per halaman<input id="color-price" type="number" min="0" step="50" /></label><button class="primary-button" type="submit">Simpan tarif</button><p id="settings-message" class="success hidden" role="status">Tarif tersimpan.</p></form>
+      </section>
+    </main>
+    <div id="toast" class="toast hidden" role="status"></div>
+    <script src="renderer.js"></script>
+  </body>
+</html>
